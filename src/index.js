@@ -72,11 +72,6 @@ loader
 
     scene.add(stackHelper);
 
-    const axes = new THREE.AxesHelper(80);
-    axes.material.depthTest = false;
-    axes.renderOrder = 1;
-    stackHelper.add(axes);
-
     // build the gui
     gui(stackHelper);
 
