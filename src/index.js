@@ -21,6 +21,8 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
+
+
 /*
 const size = 200;
 const near = 0.1;
@@ -47,6 +49,9 @@ var options = {
   invertScroll: true
 }
 var controls = new THREE.SpaceNavigatorControls(options);
+controls.position.x = -3;
+controls.position.y = 130;
+controls.position.z = 300;
 
 const onWindowResize = () => {
   camera.aspect = container.offsetWidth / container.offsetHeight;
@@ -68,7 +73,7 @@ loader
 
     const stackHelper = new AMI.StackHelper(stack);
     stackHelper.bbox.visible = false;
-    stackHelper.border.color = colors.blue;
+    stackHelper.border.visible = true;
 
     scene.add(stackHelper);
 
@@ -76,15 +81,39 @@ loader
     gui(stackHelper);
 
 
+
     // center camera and interactor to center of bouding box
     const centerLPS = stackHelper.stack.worldCenter();
-    camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
+    camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
+    //controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
 
-    // center camera
-    controls.position.x = centerLPS.x;
-    controls.position.y = centerLPS.y;
-    controls.position.z = centerLPS.z + 240;
+
+    /*
+    // TEMP axes
+    const axes = new THREE.AxesHelper(80);
+    axes.material.depthTest = false;
+    axes.renderOrder = 1;
+    stackHelper.add(axes);
+
+    /*
+    // TEMP ------------------------------------------------------------------------------
+
+    // center camera and interactor to center of bouding box
+    const centerLPS = stackHelper.stack.worldCenter();
+    console.log('\n\n centerLPS: ');
+    console.log(centerLPS);
+
+    let tmp1 = stackHelper.stack.AABBox();
+    console.log('\n\n AABBox: ');
+    console.log(tmp1);
+
+    console.log('\n\n stackHelper: ');
+    console.log(stackHelper);
+
+
+    // TEMP ------------------------------------------------------------------------------
+    */
   })
   .catch(error => {
     window.console.log('oops... something went wrong...');
@@ -92,14 +121,18 @@ loader
   });
 
 const animate = (time) => {
+
   // update space navigator
   controls.update();
   // update camera position
   camera.position.copy(controls.position);
-  // update camera rotation
-  camera.rotation.copy(controls.rotation);
-  // when using mousewheel to control FOV
-  camera.fov = controls.fov;
+
+  // no update camera rotation
+  //camera.rotation.copy(controls.rotation);
+  
+  // when using mousewheel to control camera FOV
+  //camera.fov = controls.fov
+  //camera.updateProjectionMatrix();
 
   renderer.render(scene, camera);
 
