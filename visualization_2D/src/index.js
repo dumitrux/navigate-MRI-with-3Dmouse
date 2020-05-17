@@ -50,8 +50,8 @@ var options = {
 }
 var controls = new THREE.SpaceNavigatorControls(options);
 controls.position.x = -3;
-controls.position.y = 130;
-controls.position.z = 300;
+controls.position.y = 90;
+controls.position.z = 285;
 
 const onWindowResize = () => {
   camera.aspect = container.offsetWidth / container.offsetHeight;
