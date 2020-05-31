@@ -22,15 +22,6 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 
-
-/*
-const size = 200;
-const near = 0.1;
-const far = 500;
-const camera = new THREE.OrthographicCamera(-size, size, size, -size, near, far);
-*/
-
-
 var options = {
   controllerId: 0,
   movementEnabled: true,
@@ -49,9 +40,10 @@ var options = {
   invertScroll: true
 }
 var controls = new THREE.SpaceNavigatorControls(options);
-controls.position.x = -3;
-controls.position.y = 90;
-controls.position.z = 285;
+controls.position.x = 2;
+controls.position.y = 128;
+controls.position.z = 300;
+
 
 const onWindowResize = () => {
   camera.aspect = container.offsetWidth / container.offsetHeight;
@@ -80,40 +72,75 @@ loader
     // build the gui
     gui(stackHelper);
 
+    // stack center calculation
+    var P1 = new THREE.Vector3(
+      stack._origin.x,
+      stack._origin.y,
+      stack._origin.z
+    );
+
+    var vectorD1 = new THREE.Vector3(
+      stack.frame[0].imageOrientation[0],
+      stack.frame[0].imageOrientation[1],
+      stack.frame[0].imageOrientation[2]
+    );
+
+    var vectorD2 = new THREE.Vector3(
+      stack.frame[0].imageOrientation[3],
+      stack.frame[0].imageOrientation[4],
+      stack.frame[0].imageOrientation[5]
+    );
+
+    var P2 = new THREE.Vector3(
+      P1.x + (vectorD2.x * 220),
+      P1.y + (vectorD2.y * 220),
+      P1.z + (vectorD2.z * 220)
+    );
+
+    var P3 = new THREE.Vector3(
+      P2.x + (vectorD1.x * 165),
+      P2.y + (vectorD1.y * 165),
+      P2.z + (vectorD1.z * 165)
+    );
+
+    var P4 = new THREE.Vector3(
+      P1.x + (vectorD1.x * 165),
+      P1.y + (vectorD1.y * 165),
+      P1.z + (vectorD1.z * 165)
+    );
+
+    var middle = new THREE.Vector3();
+
+    middle.x = P1.x + (vectorD1.x * 82.5) + (vectorD2.x * 110);
+    middle.y = P1.y + (vectorD1.y * 82.5) + (vectorD2.y * 110);
+    middle.z = P1.z + (vectorD1.z * 82.5) + (vectorD2.z * 110);
+
+    function makeInstance(color, size, x, y, z) {
+      var geometry = new THREE.BoxGeometry(size, size, size);
+      var material = new THREE.MeshBasicMaterial({ color });
+
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      cube.position.x = x;
+      cube.position.y = y;
+      cube.position.z = z;
+    }
+
+    console.log(middle);
+    console.log(stack);
+    console.log(stack.frame[0].imageOrientation);
+    //makeInstance(0x44aa88, 10, middle.x, middle.y, middle.z);
+    //makeInstance(0x44aa88, 10, P1.x, P1.y, P1.z);
+    //makeInstance(0x44aa88, 10, P2.x, P2.y, P2.z);
+    //makeInstance(0x44aa88, 10, P3.x, P3.y, P3.z);
+    //makeInstance(0x44aa88, 10, P4.x, P4.y, P4.z);
 
 
-    // center camera and interactor to center of bouding box
-    const centerLPS = stackHelper.stack.worldCenter();
-    camera.lookAt(0, 0, 0);
+    // center camera to the center of the stack
+    camera.up.set(vectorD2.x, -vectorD2.y, vectorD2.z);
+    camera.lookAt(middle.x, middle.y, middle.z);
     camera.updateProjectionMatrix();
-    //controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
-
-
-    /*
-    // TEMP axes
-    const axes = new THREE.AxesHelper(80);
-    axes.material.depthTest = false;
-    axes.renderOrder = 1;
-    stackHelper.add(axes);
-
-    /*
-    // TEMP ------------------------------------------------------------------------------
-
-    // center camera and interactor to center of bouding box
-    const centerLPS = stackHelper.stack.worldCenter();
-    console.log('\n\n centerLPS: ');
-    console.log(centerLPS);
-
-    let tmp1 = stackHelper.stack.AABBox();
-    console.log('\n\n AABBox: ');
-    console.log(tmp1);
-
-    console.log('\n\n stackHelper: ');
-    console.log(stackHelper);
-
-
-    // TEMP ------------------------------------------------------------------------------
-    */
   })
   .catch(error => {
     window.console.log('oops... something went wrong...');
@@ -129,7 +156,7 @@ const animate = (time) => {
 
   // no update camera rotation
   //camera.rotation.copy(controls.rotation);
-  
+
   // when using mousewheel to control camera FOV
   //camera.fov = controls.fov
   //camera.updateProjectionMatrix();
