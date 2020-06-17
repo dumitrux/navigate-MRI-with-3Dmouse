@@ -1,7 +1,7 @@
 import { colors, files } from './utils.js';
 import 'https://rawgit.com/archilogic-com/aframe-space-navigator-controls/master/dist/aframe-space-navigator-controls.js';
 
-// Classic ThreeJS setup
+// Setup
 const container = document.getElementById('container');
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -21,7 +21,7 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-
+// aframe-space-navigator-controls
 var options = {
   controllerId: 0,
   movementEnabled: true,
@@ -40,9 +40,11 @@ var options = {
   invertScroll: true
 }
 var controls = new THREE.SpaceNavigatorControls(options);
-controls.position.x = 2;
-controls.position.y = 128;
-controls.position.z = 300;
+
+// Observer point (same as Camera point)
+controls.position.x = 0;
+controls.position.y = 118;
+controls.position.z = 280;
 
 
 const onWindowResize = () => {
@@ -72,19 +74,24 @@ loader
     // build the gui
     gui(stackHelper);
 
+
     // stack center calculation
+
+    // Origin point is one of the vertex
     var P1 = new THREE.Vector3(
       stack._origin.x,
       stack._origin.y,
       stack._origin.z
     );
 
+    // Vector which point to another vertex from the origin vertex
     var vectorD1 = new THREE.Vector3(
       stack.frame[0].imageOrientation[0],
       stack.frame[0].imageOrientation[1],
       stack.frame[0].imageOrientation[2]
     );
 
+    // Vector which point to another vertex from the origin vertex
     var vectorD2 = new THREE.Vector3(
       stack.frame[0].imageOrientation[3],
       stack.frame[0].imageOrientation[4],
@@ -109,12 +116,15 @@ loader
       P1.z + (vectorD1.z * 165)
     );
 
+    // Calculation of the middle of the stack
     var middle = new THREE.Vector3();
 
     middle.x = P1.x + (vectorD1.x * 82.5) + (vectorD2.x * 110);
     middle.y = P1.y + (vectorD1.y * 82.5) + (vectorD2.y * 110);
     middle.z = P1.z + (vectorD1.z * 82.5) + (vectorD2.z * 110);
 
+
+    // Display a cube to see where a point is
     function makeInstance(color, size, x, y, z) {
       var geometry = new THREE.BoxGeometry(size, size, size);
       var material = new THREE.MeshBasicMaterial({ color });
@@ -127,9 +137,6 @@ loader
       cube.position.z = z;
     }
 
-    console.log(middle);
-    console.log(stack);
-    console.log(stack.frame[0].imageOrientation);
     //makeInstance(0x44aa88, 10, middle.x, middle.y, middle.z);
     //makeInstance(0x44aa88, 10, P1.x, P1.y, P1.z);
     //makeInstance(0x44aa88, 10, P2.x, P2.y, P2.z);
@@ -138,7 +145,7 @@ loader
 
 
     // center camera to the center of the stack
-    camera.up.set(vectorD2.x, -vectorD2.y, vectorD2.z);
+    camera.up.set(vectorD2.x - 0.009, -vectorD2.y, vectorD2.z);
     camera.lookAt(middle.x, middle.y, middle.z);
     camera.updateProjectionMatrix();
   })
@@ -154,12 +161,9 @@ const animate = (time) => {
   // update camera position
   camera.position.copy(controls.position);
 
-  // no update camera rotation
-  //camera.rotation.copy(controls.rotation);
-
   // when using mousewheel to control camera FOV
-  //camera.fov = controls.fov
-  //camera.updateProjectionMatrix();
+  camera.fov = controls.fov
+  camera.updateProjectionMatrix();
 
   renderer.render(scene, camera);
 
