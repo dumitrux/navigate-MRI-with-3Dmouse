@@ -2,10 +2,10 @@
 It displays MRI in 2D and 3D multi-slice views, with easy search and navigation with a 3D mouse.
 
 ### 2D
-![2D](./assets/2D.gif)
+![2D](./assets/2d.gif)
 
 ### 3D
-![3D](./assets/3D.gif)
+![3D](./assets/3d.gif)
 
 
 ## Table of content
